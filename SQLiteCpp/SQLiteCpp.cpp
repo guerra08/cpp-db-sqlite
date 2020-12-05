@@ -5,21 +5,24 @@
 int create_table(std::string db_name, std::string tb_name, std::string tb_definition, std::string tb_constraints);
 int insert_into(std::string db_name, std::string tb_name, std::string tb_definition, std::string values);
 int select_from(std::string db_name, std::string tb_name, std::string selection, std::string where_clause);
+int select_from(std::string db_name, std::string tb_name);
 int exec_callback(void* data, int argc, char** argv, char** azColName);
+
+const std::string db_name = "my_db.db";
 
 int main()
 {
-    if ((create_table("my_db.db", "entries", "id INTEGER NOT NULL PRIMARY KEY, entry TEXT NOT NULL", "") != 0)) 
+    if ((create_table(db_name, "entries", "id INTEGER NOT NULL PRIMARY KEY, entry TEXT NOT NULL", "") != 0))
     {
         std::cerr << "Error creating table!" << std::endl;
         return 1;
     }
-    if ((insert_into("my_db.db", "entries", "entry", "'Hello, world!'")) != 0) 
+    if ((insert_into(db_name, "entries", "entry", "'Hello, world!'")) != 0)
     {
         std::cerr << "Error inserting into table!" << std::endl;
         return 1;
     }
-    if ((select_from("my_db.db", "entries", "*", "id = 1")) != 0)
+    if ((select_from(db_name, "entries")) != 0)
     {
         std::cerr << "Error inserting into table!" << std::endl;
         return 1;
@@ -72,7 +75,7 @@ int insert_into(std::string db_name, std::string tb_name, std::string tb_definit
 }
 
 /*
-    Selects rows from a given table, with a where clause.
+    Selects rows from a given table, with a column selection and where clause.
 */
 int select_from(std::string db_name, std::string tb_name, std::string selection, std::string where_clause)
 {
@@ -83,6 +86,28 @@ int select_from(std::string db_name, std::string tb_name, std::string selection,
     std::stringstream sql;
     char* err;
     sql << "SELECT " << selection << " FROM " << tb_name << " WHERE " << where_clause << ";";
+    exit = sqlite3_exec(db, sql.str().c_str(), exec_callback, 0, &err);
+    if (exit != SQLITE_OK)
+    {
+        sqlite3_free(err);
+        return 1;
+    }
+    sqlite3_close(db);
+    return 0;
+}
+
+/*
+    Selects all rows from a given table, with all columns
+*/
+int select_from(std::string db_name, std::string tb_name)
+{
+    sqlite3* db;
+    int exit;
+    if ((sqlite3_open(db_name.c_str(), &db)))
+        return -1;
+    std::stringstream sql;
+    char* err;
+    sql << "SELECT * " << " FROM " << tb_name << ";";
     exit = sqlite3_exec(db, sql.str().c_str(), exec_callback, 0, &err);
     if (exit != SQLITE_OK)
     {
