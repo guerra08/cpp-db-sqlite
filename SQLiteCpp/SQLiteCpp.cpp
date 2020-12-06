@@ -8,21 +8,21 @@ int select_from(std::string db_name, std::string tb_name, std::string selection,
 int select_from(std::string db_name, std::string tb_name);
 int exec_callback(void* data, int argc, char** argv, char** azColName);
 
-const std::string db_name = "my_db.db";
+const std::string DB_NAME = "my_db.db";
 
 int main()
 {
-    if ((create_table(db_name, "entries", "id INTEGER NOT NULL PRIMARY KEY, entry TEXT NOT NULL", "") != 0))
+    if ((create_table(DB_NAME, "entries", "id INTEGER NOT NULL PRIMARY KEY, entry TEXT NOT NULL", "") != 0))
     {
         std::cerr << "Error creating table!" << std::endl;
         return 1;
     }
-    if ((insert_into(db_name, "entries", "entry", "'Hello, world!'")) != 0)
+    if ((insert_into(DB_NAME, "entries", "entry", "'Hello, world!'")) != 0)
     {
         std::cerr << "Error inserting into table!" << std::endl;
         return 1;
     }
-    if ((select_from(db_name, "entries")) != 0)
+    if ((select_from(DB_NAME, "entries")) != 0)
     {
         std::cerr << "Error inserting into table!" << std::endl;
         return 1;
