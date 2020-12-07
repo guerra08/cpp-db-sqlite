@@ -61,3 +61,6 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+sqlite3.c  linguist-detectable=false
+sqlite3.h  linguist-detectable=false
